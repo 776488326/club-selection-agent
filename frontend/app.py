@@ -184,48 +184,56 @@ def render_chat():
 
 def handle_user_input():
     """处理用户输入"""
-    # 如果有建议输入，直接处理并返回
+    # 如果有建议输入，直接处理
     if 'suggested_input' in st.session_state:
         user_input = st.session_state.suggested_input
         del st.session_state.suggested_input
-    else:
-        # 正常的聊天输入
-        user_input = st.chat_input("输入你的问题...")
+        # 立即处理建议输入
+        if user_input and st.session_state.agent:
+            process_user_message(user_input)
+        return
+    
+    # 正常的聊天输入
+    user_input = st.chat_input("输入你的问题...")
     
     if user_input:
-        # 显示用户消息
-        st.session_state.messages.append({"role": "user", "content": user_input})
-        st.rerun()
-        
-        # 调用 Agent
-        if st.session_state.agent:
-            try:
-                with st.spinner("🤖 思考中..."):
-                    # 创建配置
-                    config = {"configurable": {"thread_id": "default_thread"}}
-                    
-                    # 调用 agent
-                    response = st.session_state.agent.invoke(
-                        {"messages": [HumanMessage(content=user_input)]},
-                        config=config
-                    )
-                    
-                    # 获取 AI 回复
-                    ai_message = response["messages"][-1]
-                    assistant_response = ai_message.content
-                    
-                    # 显示助手消息
-                    st.session_state.messages.append({"role": "assistant", "content": assistant_response})
-                    st.rerun()
-                    
-            except Exception as e:
-                error_msg = f"❌ 抱歉，处理你的请求时出错了：{str(e)}"
-                st.session_state.messages.append({"role": "assistant", "content": error_msg})
+        process_user_message(user_input)
+
+
+def process_user_message(user_input):
+    """处理用户消息并调用 Agent"""
+    # 添加用户消息
+    st.session_state.messages.append({"role": "user", "content": user_input})
+    
+    # 调用 Agent
+    if st.session_state.agent:
+        try:
+            with st.spinner("🤖 思考中..."):
+                # 创建配置
+                config = {"configurable": {"thread_id": "default_thread"}}
+                
+                # 调用 agent
+                response = st.session_state.agent.invoke(
+                    {"messages": [HumanMessage(content=user_input)]},
+                    config=config
+                )
+                
+                # 获取 AI 回复
+                ai_message = response["messages"][-1]
+                assistant_response = ai_message.content
+                
+                # 添加助手消息
+                st.session_state.messages.append({"role": "assistant", "content": assistant_response})
                 st.rerun()
-        else:
-            error_msg = "❌ Agent 未初始化，请检查配置"
+                
+        except Exception as e:
+            error_msg = f"❌ 抱歉，处理你的请求时出错了：{str(e)}"
             st.session_state.messages.append({"role": "assistant", "content": error_msg})
             st.rerun()
+    else:
+        error_msg = "❌ Agent 未初始化，请检查配置"
+        st.session_state.messages.append({"role": "assistant", "content": error_msg})
+        st.rerun()
 
 
 def main():
