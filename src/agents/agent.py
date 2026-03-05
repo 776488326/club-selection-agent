@@ -76,8 +76,29 @@ class AgentState(MessagesState):
 
 def build_agent(ctx=None):
     """构建校园社团选课智能体"""
-    workspace_path = os.getenv("COZE_WORKSPACE_PATH", "/workspace/projects")
-    config_path = os.path.join(workspace_path, LLM_CONFIG)
+    # 动态获取项目根目录
+    # 优先使用环境变量，如果没有则根据当前文件位置计算
+    workspace_path = os.getenv("COZE_WORKSPACE_PATH")
+    
+    if workspace_path and os.path.exists(workspace_path):
+        # 使用环境变量指定的路径
+        config_path = os.path.join(workspace_path, LLM_CONFIG)
+    else:
+        # 根据当前文件位置动态计算项目根目录
+        # agent.py 在 src/agents/ 目录下
+        # 项目根目录应该是 src/ 的上一级
+        current_dir = os.path.dirname(os.path.abspath(__file__))
+        src_dir = os.path.dirname(current_dir)
+        project_root = os.path.dirname(src_dir)
+        
+        # 构建配置文件路径
+        config_path = os.path.join(project_root, LLM_CONFIG)
+        
+        # 如果文件不存在，尝试相对于当前工作目录
+        if not os.path.exists(config_path):
+            cwd_config = os.path.join(os.getcwd(), LLM_CONFIG)
+            if os.path.exists(cwd_config):
+                config_path = cwd_config
 
     with open(config_path, 'r', encoding='utf-8') as f:
         cfg = json.load(f)
