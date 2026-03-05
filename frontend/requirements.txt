@@ -1,2 +1,29 @@
 # Streamlit 前端依赖
 streamlit>=1.28.0
+
+# LangChain & LangGraph
+langchain>=1.0.0
+langchain-core>=1.0.0
+langchain-openai>=1.0.0
+langgraph>=1.0.0
+langgraph-checkpoint>=3.0.0
+langsmith>=0.4.0
+
+# Supabase
+supabase>=2.27.0
+postgrest>=2.27.0
+realtime>=2.27.0
+storage3>=2.27.0
+
+# Coze SDK
+coze-coding-dev-sdk>=0.5.0
+coze-coding-utils>=0.2.0
+coze-workload-identity>=0.1.0
+
+# OpenAI
+openai>=2.24.0
+
+# 其他必要依赖
+pydantic>=2.12.0
+python-dotenv>=1.2.0
+requests>=2.32.0
