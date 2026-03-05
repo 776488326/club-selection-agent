@@ -9,11 +9,22 @@ import json
 import asyncio
 from typing import Dict, List
 
-# 添加项目路径
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..'))
+# 添加项目路径到 Python 路径
+# 获取 frontend 目录的绝对路径
+frontend_dir = os.path.dirname(os.path.abspath(__file__))
+# 获取项目根目录（frontend 的父目录）
+project_root = os.path.dirname(frontend_dir)
+# src 目录
+src_dir = os.path.join(project_root, 'src')
+
+# 添加到 sys.path
+if project_root not in sys.path:
+    sys.path.insert(0, project_root)
+if src_dir not in sys.path:
+    sys.path.insert(0, src_dir)
 
 import streamlit as st
-from src.agents.agent import build_agent
+from agents.agent import build_agent
 from langchain_core.messages import HumanMessage, AIMessage
 
 # 配置页面

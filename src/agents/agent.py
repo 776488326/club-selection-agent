@@ -3,6 +3,7 @@
 实现"预选+智能匹配"选课机制，综合志愿优先级、兴趣匹配度、社团容量等因素完成选课录取
 """
 
+import sys
 import os
 import json
 from typing import Annotated
@@ -12,6 +13,22 @@ from langgraph.graph import MessagesState
 from langgraph.graph.message import add_messages
 from langchain_core.messages import AnyMessage
 from coze_coding_utils.runtime_ctx.context import default_headers
+
+# 添加路径设置
+# 获取当前文件所在目录
+current_dir = os.path.dirname(os.path.abspath(__file__))
+# 获取 src 目录
+src_dir = os.path.dirname(current_dir)
+# 获取项目根目录
+project_root = os.path.dirname(src_dir)
+
+# 添加到 sys.path
+if project_root not in sys.path:
+    sys.path.insert(0, project_root)
+if src_dir not in sys.path:
+    sys.path.insert(0, src_dir)
+
+# 导入 storage 模块
 from storage.memory.memory_saver import get_memory_saver
 
 # 导入工具
