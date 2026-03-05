@@ -41,13 +41,20 @@ def _load_env() -> None:
 def get_supabase_credentials() -> tuple[str, str]:
     _load_env()
 
+    # 优先使用 COZE_ 前缀的环境变量
     url = os.getenv("COZE_SUPABASE_URL")
     anon_key = os.getenv("COZE_SUPABASE_ANON_KEY")
 
+    # 如果没有，尝试使用无前缀的环境变量
     if not url:
-        raise ValueError("COZE_SUPABASE_URL is not set")
+        url = os.getenv("SUPABASE_URL")
     if not anon_key:
-        raise ValueError("COZE_SUPABASE_ANON_KEY is not set")
+        anon_key = os.getenv("SUPABASE_KEY")
+
+    if not url:
+        raise ValueError("COZE_SUPABASE_URL or SUPABASE_URL is not set")
+    if not anon_key:
+        raise ValueError("COZE_SUPABASE_ANON_KEY or SUPABASE_KEY is not set")
 
     return url, anon_key
 
